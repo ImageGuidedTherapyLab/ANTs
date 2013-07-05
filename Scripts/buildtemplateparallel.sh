@@ -40,12 +40,14 @@ if [ ! -s ${ANTSPATH}/ANTS ] ; then
 fi
 
 # Test availability of helper scripts.
+# Get the location of the script
+ANTSSCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 # No need to test this more than once. Can reside outside of the main loop.
-ANTSSCRIPTNAME=${ANTSPATH}antsIntroduction.sh
-PEXEC=${ANTSPATH}ANTSpexec.sh
-SGE=${ANTSPATH}waitForSGEQJobs.pl
-PBS=${ANTSPATH}waitForPBSQJobs.pl
-XGRID=${ANTSPATH}waitForXGridJobs.pl
+ANTSSCRIPTNAME=${ANTSSCRIPTDIR}antsIntroduction.sh
+PEXEC=${ANTSSCRIPTDIR}ANTSpexec.sh
+SGE=${ANTSSCRIPTDIR}waitForSGEQJobs.pl
+PBS=${ANTSSCRIPTDIR}waitForPBSQJobs.pl
+XGRID=${ANTSSCRIPTDIR}waitForXGridJobs.pl
 
 fle_error=0
 for FLE in $ANTSSCRIPTNAME $PEXEC $SGE $XGRID
@@ -1158,6 +1160,8 @@ while [  $i -lt ${ITERATIONLIMIT} ]
 
     # 5 prepare registration command
     exe="${ANTSSCRIPTNAME} -d ${DIM} -r ${dir}/${TEMPLATE} -i ${dir}/${IMG} -o ${dir}/${OUTFN} -m ${MAXITERATIONS} -n ${N4CORRECT} -s ${METRICTYPE} -t ${TRANSFORMATIONTYPE} "
+    # remember the command called
+    echo $exe >> job_${count}_${i}_metriclog.txt 
     pexe=" $exe >> job_${count}_${i}_metriclog.txt "
 
     # 6 submit to SGE (DOQSUB=1), PBS (DOQSUB=4), PEXEC (DOQSUB=2), XGrid (DOQSUB=3) or else run locally (DOQSUB=0)

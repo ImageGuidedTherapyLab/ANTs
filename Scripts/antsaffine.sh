@@ -75,12 +75,23 @@ echo  " ANTSPATH  is $ANTSPATH     "
  #below, some affine options
   #--MI-option 16x8000 #-a InitAffine.txt --continue-affine 0
 
+# assemble registration command 
 exe=" ${ANTSPATH}ANTS $DIM -m  MI[${FIXED},${MOVING},1,32] -o ${OUTPUTNAME}   -i 0   --use-Histogram-Matching --number-of-affine-iterations 10000x10000x10000x10000x10000  $RIGID   "
 
+ echo " registration cmd "
  echo " $exe "
 
-  $exe
 
-    ${ANTSPATH}WarpImageMultiTransform $DIM  $MOVING  ${OUTPUTNAME}deformed.nii.gz ${OUTPUTNAME}Affine.txt  -R ${FIXED}
+# add interpolation options ??
+INTERPOLATION="  "
+if [ $NUMPARAMS -gt 5 ]
+then
+  INTERPOLATION=" --use-ML 0.4mm"
+fi
+transformcmd=" ${ANTSPATH}WarpImageMultiTransform $DIM  $MOVING  ${OUTPUTNAME}deformed.nii.gz ${OUTPUTNAME}Affine.txt  -R ${FIXED} ${INTERPOLATION} "
+ echo " image transformation cmd "
+ echo " $transformcmd "
 
-
+echo "running..."
+ $exe
+ $transformcmd
